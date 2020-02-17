@@ -11,7 +11,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class Game extends cc.Component {
 
     @property(cc.Label)
     label: cc.Label = null;
@@ -25,23 +25,45 @@ export default class NewClass extends cc.Component {
     @property
     timer: number = 2;
 
-    private newB:any = null;
+    private newB:cc.Node = null;
     private countTimer: number = 0;
+    private isSwipe: boolean = false;
+    private startX: number;
+    private endX: number;
+    private curB:cc.Node;
+    private count = 0;
+    private arr :[cc.Node];
     newBlock() {
         this.newB = cc.instantiate(this.block);
         this.node.addChild(this.newB);   
-        console.log("new block created at " + this.newB.x + "," + this.newB.y);
     }
-
+    
     // LIFE-CYCLE CALLBACKS:
-     onLoad () {
-        if (this.newB == null)
-            this.newBlock();
+    async onLoad () {
+         await this.newBlock();
+         this.node.on('touchstart', (e: cc.Event.EventTouch) => {
+             this.startX = e.getLocation().x;
+         }, this.node);
+         this.node.on('touchmove', (e: cc.Event.EventTouch) => {
+             this.isSwipe = true;
+         }, this.node);
+         this.node.on('touchend', (e: cc.Event.EventTouch) => {
+             this.endX = e.getLocation().x;
+             if (this.isSwipe) {
+                if (this.endX < this.startX && this.newB != undefined) {
+                    this.newB.setPosition(this.newB.x - 16, this.newB.y);
+                } else if (this.endX > this.startX && this.newB != undefined) {
+                    this.newB.setPosition(this.newB.x + 16, this.newB.y)
+                }
+                this.isSwipe = false;
+             } else {
+                 console.log(this.newB.x);
+                 this.newB.angle = (this.newB.angle - 90) % 180;
+             }
+         }, this.node);
+
      }
 
-    touchStart(e: cc.Event.EventTouch) : void {
-        console.log(e.getLocation());
-    }
     update (dt) {
         if (this.countTimer < this.timer) {
             this.countTimer += dt;
@@ -50,14 +72,14 @@ export default class NewClass extends cc.Component {
             this.newB.setPosition(this.newB.x, this.newB.y - 16);
             this.countTimer = 0;
             if (this.newB.y <= -80) {
+                console.log(this.newB);
+                this.newB.removeChild(this.newB.getChildByName("1"));
+                this.arr.push(this.newB);
                 this.newB = null;
-                console.log("Block stopped");
                 this.newBlock();
+                this.count += 1;
             }
         }
-            
-
-    
     }
 }
 

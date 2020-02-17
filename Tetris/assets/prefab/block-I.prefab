@@ -25,10 +25,13 @@
     "_components": [
       {
         "__id__": 5
+      },
+      {
+        "__id__": 6
       }
     ],
     "_prefab": {
-      "__id__": 6
+      "__id__": 7
     },
     "_opacity": 255,
     "_color": {
@@ -178,6 +181,18 @@
     "_tmxFile": {
       "__uuid__": "b5de170c-1dd9-471c-a48c-f9a3778c3189"
     },
+    "_id": ""
+  },
+  {
+    "__type__": "7a604WU++1FEKBiDa3xYsCf",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "label": null,
+    "text": "hello",
     "_id": ""
   },
   {
