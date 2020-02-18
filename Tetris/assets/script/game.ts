@@ -22,8 +22,8 @@ export default class Game extends cc.Component {
     @property
     text: string = 'hello';
 
-    @property(cc.Prefab)
-    block: cc.Prefab = null;
+    @property({type: [cc.Prefab]})
+    blocks: cc.Prefab[] = [];
 
     @property
     timer: number = 2;
@@ -38,11 +38,18 @@ export default class Game extends cc.Component {
     private count = 0;
     private arr: any;
 
+    random(): number {
+        return Math.floor(Math.random() * Math.floor(this.blocks.length));
+    }
+
     newBlock() {
-        this.curB = cc.instantiate(this.block);
+        var r = this.random();
+        console.log(r);
+        this.curB = cc.instantiate(this.blocks[r]);
         this.node.addChild(this.curB);
         this.newB = new Block();
         this.newB.node = this.curB;
+        this.newB.kindOfBlock = r;
     }
     initBoard() {
         this.arr = new Array(24);

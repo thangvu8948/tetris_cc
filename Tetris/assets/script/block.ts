@@ -66,24 +66,43 @@ export default class Block extends cc.Component {
 
     rotate() {
         this.calcEnd();
-      //  this.node.angle = (this.node.angle - 90) % 180;
+        this.node.angle = (this.node.angle - 90) % 180;
       let node1 = this.node.getChildByName("1");
       let node2 = this.node.getChildByName("2");
       let node3 = this.node.getChildByName("3");
       let node4 = this.node.getChildByName("4");
-      switch(this.kindOfBlock) {
-        //Block-S
-        case 0: {
-            if (this.state == 0) {
-                node1.anchorY=-1.5;
-                node4.anchorX=0.5
-            } else {
-                node1.anchorY=0.5;
-                node4.anchorX=-1.5
-            }
-        }
-
-      }
+    //   switch(this.kindOfBlock) {
+    //     //Block-S
+    //     case 0: {
+    //         if (this.state == 0) {
+    //             node1.anchorY=-1.5;
+    //             node4.anchorX=0.5
+    //         } else {
+    //             node1.anchorY=0.5;
+    //             node4.anchorX=-1.5
+    //         }
+    //         break;
+    //     }
+    //     //Block-I
+    //     case 1: {
+    //         if (this.state == 0) {
+    //             node1.anchorX = -0.5;
+    //             node1.anchorY = 1.5;
+    //             node3.anchorX = -0.5;
+    //             node4.anchorX = -0.5;
+    //             node3.anchorY = -0.5;
+    //             node4.anchorY = -1.5
+    //         } else {
+    //             node1.anchorX = 0.5;
+    //             node1.anchorY = 0.5;
+    //             node3.anchorX = -1.5;
+    //             node3.anchorY = 0.5;
+    //             node4.anchorX = -2.5;
+    //             node4.anchorY = 0.5
+    //         }
+    //         break;
+    //     }
+    //   }
         this.state = this.state == 0 ? 1 : 0;
         this.calcEnd()
         while (this.endX > 72) {
@@ -105,6 +124,17 @@ export default class Block extends cc.Component {
                 } else {
                     this.endX = this.node.x + this.blockSize;
                     this.endY = this.node.y;
+                }
+                break;
+            }
+            ///Block-I
+            case 1: {
+                if (this.state == 0) {
+                    this.endX = this.node.x + this.blockSize * 3;
+                    this.endY = this.node.y;
+                } else {
+                    this.endX = this.node.x + this.blockSize;
+                    this.endY = this.node.y - this.blockSize;
                 }
             }
         }
