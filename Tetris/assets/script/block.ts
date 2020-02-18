@@ -11,22 +11,123 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
+export default class Block extends cc.Component {
     @property
-    text: string = 'hello';
-
+    timer: number = 2;
     // LIFE-CYCLE CALLBACKS:
-
+    private canMoveRight: boolean;
+    state: number = 0; 
+    kindOfBlock:number = 0;
+    private blockSize = 16;
+    endX: number;
+    endY: number;
+    canDrop:boolean = true;
+    private countTimer: number = 0;
     onLoad () {
     }
-
-    start () {
-
+    checkMove(dir: number) :boolean {
+        this.calcEnd();
+        switch(dir) {
+            //case right:
+            case 0: {
+                if (this.endX < 72) return true;
+                break;
+            }
+            //case left:
+            case 1: {
+                if (this.node.x >= -56) return true;
+            }
+        }
+        return false;
+    }
+    move(dir) {
+        switch(dir) {
+            case 0: {
+                this.node.x += this.blockSize;
+                break;
+            }
+            case 1: {
+                this.node.x -= this.blockSize;
+            }
+        }
     }
 
-    // update (dt) {}
+    getCell(node: cc.Node){
+        let anchorX = node.anchorX;
+        let anchorY = node.anchorY;
+        let coorX:number;
+        let coorY: number;
+        coorX = (-anchorX + 0.5) * this.blockSize;
+        coorY = (-anchorY + 0.5) * this.blockSize;
+        let cellX = (this.node.x + 72 + coorX)/16;
+        let cellY = -(this.node.y - 144 + coorY)/16;
+        return [cellY,cellX];
+    }
+
+    rotate() {
+        this.calcEnd();
+      //  this.node.angle = (this.node.angle - 90) % 180;
+      let node1 = this.node.getChildByName("1");
+      let node2 = this.node.getChildByName("2");
+      let node3 = this.node.getChildByName("3");
+      let node4 = this.node.getChildByName("4");
+      switch(this.kindOfBlock) {
+        //Block-S
+        case 0: {
+            if (this.state == 0) {
+                node1.anchorY=-1.5;
+                node4.anchorX=0.5
+            } else {
+                node1.anchorY=0.5;
+                node4.anchorX=-1.5
+            }
+        }
+
+      }
+        this.state = this.state == 0 ? 1 : 0;
+        this.calcEnd()
+        while (this.endX > 72) {
+            this.node.setPosition(this.node.x - 16, this.node.y);
+            this.calcEnd();
+        } 
+        while (this.endX < -56) {
+            this.node.setPosition(this.node.x + 16, this.node.y);
+            this.calcEnd();
+        }
+    }
+    calcEnd() {
+        switch(this.kindOfBlock) {
+            //Case block-S
+            case 0: {
+                if (this.state == 0) {
+                    this.endX = this.node.x + this.blockSize * 2;
+                    this.endY = this.node.y;
+                } else {
+                    this.endX = this.node.x + this.blockSize;
+                    this.endY = this.node.y;
+                }
+            }
+        }
+    }
+
+     update (dt) {
+
+        //  if (this.checkDrop()) {
+        //     if (this.countTimer < this.timer) {
+        //         this.countTimer += dt;
+        //     } else {
+        //         this.countTimer = 0;
+        //         this.node.y -= 16;
+        //         console.log("state: " + this.state + " - " + this.node.y);
+        //         // if (this.newB.y <= -80) {
+        //         //                   //  this.newB.removeChild(this.newB.getChildByName("1"));
+        //         //     // this.newB = null;
+        //         //     // this.newBlock();
+        //         //     this.count += 1;
+        //         // }
+        //     }
+        //  } else {
+        //      this.canDrop = false;
+        //  }
+     }
 }
