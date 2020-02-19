@@ -14,31 +14,45 @@ const {ccclass, property} = cc._decorator;
 export default class Block extends cc.Component {
     @property
     timer: number = 2;
+
     // LIFE-CYCLE CALLBACKS:
     private canMoveRight: boolean;
     state: number = 0; 
     kindOfBlock:number = 0;
-    private blockSize = 16;
+    blockSize = 16;
     endX: number;
     endY: number;
     canDrop:boolean = true;
     private countTimer: number = 0;
+    board: any;
+    
     onLoad () {
     }
     checkMove(dir: number) :boolean {
-        this.calcEnd();
-        switch(dir) {
-            //case right:
-            case 0: {
-                if (this.endX < 72) return true;
-                break;
-            }
-            //case left:
-            case 1: {
-                if (this.node.x >= -56) return true;
-            }
+        console.log(dir);
+        for (let block of this.node.children) {
+            let cell = this.getCell(block);
+            try {
+                let leftCell = this.board[cell[0]][cell[1] - 1];
+                let rightCell = this.board[cell[0]][cell[1] + 1];
+                switch(dir) {
+                    case 0: 
+                        if ((rightCell != null || rightCell != undefined) && rightCell.canDrop == false){
+                            console.log(rightCell);
+                            return false;
+                        } else break;
+                    case 1:
+                        if ((leftCell != null || leftCell != undefined) && leftCell.canDrop == false) {
+                            console.log(leftCell);
+                            return false;
+                        } else break;
+                }
+            } catch(e){}
+
+            
         }
-        return false;
+        return true;
+        
     }
     move(dir) {
         switch(dir) {
@@ -64,13 +78,13 @@ export default class Block extends cc.Component {
         return [cellY,cellX];
     }
 
-    rotate() {
-        this.calcEnd();
-        this.node.angle = (this.node.angle - 90) % 180;
-      let node1 = this.node.getChildByName("1");
-      let node2 = this.node.getChildByName("2");
-      let node3 = this.node.getChildByName("3");
-      let node4 = this.node.getChildByName("4");
+    // rotate() {
+    //     this.calcEnd();
+    // //   this.node.angle = (this.node.angle - 90) % 180;
+    //   let node1 = this.node.getChildByName("1");
+    //   let node2 = this.node.getChildByName("2");
+    //   let node3 = this.node.getChildByName("3");
+    //   let node4 = this.node.getChildByName("4");
     //   switch(this.kindOfBlock) {
     //     //Block-S
     //     case 0: {
@@ -103,42 +117,42 @@ export default class Block extends cc.Component {
     //         break;
     //     }
     //   }
-        this.state = this.state == 0 ? 1 : 0;
-        this.calcEnd()
-        while (this.endX > 72) {
-            this.node.setPosition(this.node.x - 16, this.node.y);
-            this.calcEnd();
-        } 
-        while (this.endX < -56) {
-            this.node.setPosition(this.node.x + 16, this.node.y);
-            this.calcEnd();
-        }
-    }
-    calcEnd() {
-        switch(this.kindOfBlock) {
-            //Case block-S
-            case 0: {
-                if (this.state == 0) {
-                    this.endX = this.node.x + this.blockSize * 2;
-                    this.endY = this.node.y;
-                } else {
-                    this.endX = this.node.x + this.blockSize;
-                    this.endY = this.node.y;
-                }
-                break;
-            }
-            ///Block-I
-            case 1: {
-                if (this.state == 0) {
-                    this.endX = this.node.x + this.blockSize * 3;
-                    this.endY = this.node.y;
-                } else {
-                    this.endX = this.node.x + this.blockSize;
-                    this.endY = this.node.y - this.blockSize;
-                }
-            }
-        }
-    }
+    //     this.state = this.state == 0 ? 1 : 0;
+    //     this.calcEnd()
+    //     while (this.endX > 72) {
+    //         this.node.setPosition(this.node.x - 16, this.node.y);
+    //         this.calcEnd();
+    //     } 
+    //     while (this.endX < -56) {
+    //         this.node.setPosition(this.node.x + 16, this.node.y);
+    //         this.calcEnd();
+    //     }
+    // }
+    // calcEnd() {
+    //     switch(this.kindOfBlock) {
+    //         //Case block-S
+    //         case 0: {
+    //             if (this.state == 0) {
+    //                 this.endX = this.node.x + this.blockSize * 2;
+    //                 this.endY = this.node.y;
+    //             } else {
+    //                 this.endX = this.node.x + this.blockSize;
+    //                 this.endY = this.node.y;
+    //             }
+    //             break;
+    //         }
+    //         ///Block-I
+    //         case 1: {
+    //             if (this.state == 0) {
+    //                 this.endX = this.node.x + this.blockSize * 3;
+    //                 this.endY = this.node.y;
+    //             } else {
+    //                 this.endX = this.node.x + this.blockSize;
+    //                 this.endY = this.node.y - this.blockSize;
+    //             }
+    //         }
+    //     }
+    // }
 
      update (dt) {
 
