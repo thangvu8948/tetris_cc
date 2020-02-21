@@ -17,6 +17,7 @@ export default class BlockT extends Block {
 
     checkMove(dir: number): boolean {
         this.calcEnd();
+        if (!super.checkMove(dir)) return false;
         switch (dir) {
             //case right:
             case 0: {
@@ -92,7 +93,6 @@ export default class BlockT extends Block {
             this.calcEnd();
         }
         while (this.endX < -56 || (this.state == 2 && this.node.x + 16 < -56)) {
-
             this.node.setPosition(this.node.x + 16, this.node.y);
             this.calcEnd();
         }

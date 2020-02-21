@@ -29,7 +29,6 @@ export default class Block extends cc.Component {
     onLoad () {
     }
     checkMove(dir: number) :boolean {
-        console.log(dir);
         for (let block of this.node.children) {
             let cell = this.getCell(block);
             try {
@@ -47,7 +46,7 @@ export default class Block extends cc.Component {
                             return false;
                         } else break;
                 }
-            } catch(e){}
+            } catch(e){ return false;}
 
             
         }

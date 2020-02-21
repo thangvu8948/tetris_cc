@@ -17,6 +17,7 @@ export default class BlockL extends Block {
 
     checkMove(dir: number): boolean {
         this.calcEnd();
+        if (!super.checkMove(dir)) return false;
         switch (dir) {
             //case right:
             case 0: {
@@ -32,12 +33,23 @@ export default class BlockL extends Block {
     }
 
     calcEnd() {
-        if (this.state == 0) {
-            this.endX = this.node.x + this.blockSize * 2;
-            this.endY = this.node.y;
-        } else {
-            this.endX = this.node.x + this.blockSize;
-            this.endY = this.node.y;
+        switch (this.state) {
+            case 0:
+                this.endX = this.node.x + this.blockSize;
+                this.endY = this.node.y; 
+                break;
+            case 1:
+                this.endX = this.node.x + this.blockSize * 2;
+                this.endY = this.node.y;
+                break;
+            case 2:
+                this.endX = this.node.x +  this.blockSize;
+                this.endY = this.node.y;
+                break;
+            case 3:
+                this.endX = this.node.x + 2 * this.blockSize;
+                this.endY = this.node.y;
+                break;
         }
     }
     rotate() {
@@ -71,7 +83,8 @@ export default class BlockL extends Block {
                 break;
         }
         this.state = (this.state + 1) % 4;
-        this.calcEnd()
+        this.calcEnd();
+    
         while (this.endX > 72) {
             this.node.setPosition(this.node.x - 16, this.node.y);
             this.calcEnd();

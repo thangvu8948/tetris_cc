@@ -17,6 +17,7 @@ export default class BlockSI extends Block {
 
     checkMove(dir: number): boolean {
         this.calcEnd();
+        if (!super.checkMove(dir)) return false;
         switch (dir) {
             //case right:
             case 0: {
