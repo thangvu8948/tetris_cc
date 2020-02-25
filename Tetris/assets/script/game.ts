@@ -139,12 +139,11 @@ export default class Game extends cc.Component {
                     if (this.isBreakHighScore()) {
                         this.saveHighScore();
                     }
-                    //    this.GameOverPopUp.active = true;
+                    this.GameOverPopUp.active = true;
                     this.GameOverPopUp.zIndex = 99;
                     this.node.opacity = 50;
                     this.GameOverScore.string = this.Score.toString();
                     break;
-                    //var filepath = cc.url.raw("resources/highscore.txt");
                 }
             } catch (e) { };
         }
