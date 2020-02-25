@@ -24,11 +24,6 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Game extends cc.Component {
 
-
-
-    @property
-    text: string = 'hello';
-
     @property({ type: [cc.Prefab] })
     blocks: cc.Prefab[] = [];
 
@@ -70,15 +65,15 @@ export default class Game extends cc.Component {
     @property(cc.AudioClip)
     SoundMove: cc.AudioClip = null;
     @property(cc.AudioClip)
-    SoundRotate:cc.AudioClip = null;
+    SoundRotate: cc.AudioClip = null;
     @property(cc.AudioClip)
     SoundScore: cc.AudioClip = null;
     @property(cc.SpriteFrame)
     SoundOnSprite: cc.SpriteFrame = null;
     @property(cc.SpriteFrame)
     SoundOffSprite: cc.SpriteFrame = null;
-    
-    private newB: any = null;
+
+    private newB: Block = null;
     private countTimer: number = 0;
     private isSwipe: boolean = false;
     private startX: number;
@@ -92,8 +87,12 @@ export default class Game extends cc.Component {
     private next: number = -1;
     private nextNode: cc.Node = null;
     private r = -1;
+    private dropNow = false;
     private isGameOver = false;
     private soundState = true;
+    private storeTimer: number = this.timer;
+    private isDragging: boolean = false;
+    private blockSize: number = 16;
     random(): number {
         return Math.floor(Math.random() * Math.floor(this.blocks.length));
     }
@@ -102,31 +101,31 @@ export default class Game extends cc.Component {
         this.r = this.random();
         if (this.next == -1) {
             this.curB = cc.instantiate(this.blocks[this.r]);
+
         } else {
             this.curB = cc.instantiate(this.blocks[this.next]);
             this.r = this.next;
         }
-        //this.next = this.random();
+        this.next = this.random();
         this.node.addChild(this.curB);
+
         switch (this.r) {
-            case 0: this.newB = new BlockS; break;
-            case 1: this.newB = new BlockI; break;
-            case 2: this.newB = new BlockL; break;
-            case 3: this.newB = new BlockLI; break;
-            case 4: this.newB = new BlockSquare; break;
-            case 5: this.newB = new BlockSI; break;
-            case 6: this.newB = new BlockT; break;
+            case 0: this.newB = new BlockS; this.cShadow = new BlockS; break;
+            case 1: this.newB = new BlockI; this.cShadow = new BlockI; break;
+            case 2: this.newB = new BlockL; this.cShadow = new BlockL; break;
+            case 3: this.newB = new BlockLI; this.cShadow = new BlockLI; break;
+            case 4: this.newB = new BlockSquare; this.cShadow = new BlockSquare; break;
+            case 5: this.newB = new BlockSI; this.cShadow = new BlockSI; break;
+            case 6: this.newB = new BlockT; this.cShadow = new BlockT; break;
 
         }
         this.newB.board = this.arr;
         this.newB.node = this.curB;
+        this.getShadow();
         if (this.nextNode) this.nextNode.destroy();
-        this.nextNode = cc.instantiate(this.blocks[this.next]);
-        this.NextBlock.addChild(this.nextNode);
-        this.nextNode.zIndex = 0;
-        this.nextNode.setPosition(-10, -10);
-        this.nextNode.setScale(0.8, 0.8);
+        this.addBlockToNext();
         this.canHold = true;
+        this.isDragging = false;
 
         //check game over
         for (let block of this.newB.node.children) {
@@ -140,7 +139,7 @@ export default class Game extends cc.Component {
                     if (this.isBreakHighScore()) {
                         this.saveHighScore();
                     }
-                    this.GameOverPopUp.active = true;
+                    //    this.GameOverPopUp.active = true;
                     this.GameOverPopUp.zIndex = 99;
                     this.node.opacity = 50;
                     this.GameOverScore.string = this.Score.toString();
@@ -148,6 +147,54 @@ export default class Game extends cc.Component {
                     //var filepath = cc.url.raw("resources/highscore.txt");
                 }
             } catch (e) { };
+        }
+    }
+    addBlockToNext() {
+        this.nextNode = cc.instantiate(this.blocks[this.next]);
+        this.NextBlock.addChild(this.nextNode);
+        this.nextNode.zIndex = 0;
+        this.nextNode.setScale(0.8, 0.8);
+        //set position for next block
+        switch(this.next) {
+            //BlockS
+            case 0: this.nextNode.setPosition(-this.blockSize, -0.5 * this.blockSize); break;
+            //BlockI
+            case 1: this.nextNode.setPosition(-this.blockSize * 1.25, 0); break;
+            //block L
+            case 2:  this.nextNode.setPosition( -this.blockSize * 0.5, -this.blockSize); break;
+            //blockLI
+            case 3:  this.nextNode.setPosition(-this.blockSize * 0.5, -this.blockSize); break;
+            //block Square: 
+            case 4:  this.nextNode.setPosition( - this.blockSize * 0.5, (-0.5) * this.blockSize); break;
+            //block SI:
+            case 5:  this.nextNode.setPosition(-this.blockSize,  0.5 * this.blockSize); break;
+            //block T
+            case 6:  this.nextNode.setPosition(-this.blockSize, -0.5 * this.blockSize); break;
+        }
+    }
+    addBlockToHold() {
+        if (this.holdingBlock) this.holdingBlock.destroy();
+        //this.curB.destroy();
+        this.holdingBlock = cc.instantiate(this.blocks[this.holdingBlockType]);
+        this.HoldBlock.addChild(this.holdingBlock);
+        this.holdingBlock.zIndex = 0;
+        this.holdingBlock.setScale(0.8, 0.8);
+        //set position for next block
+        switch(this.holdingBlockType) {
+            //BlockS
+            case 0: this.holdingBlock.setPosition((-0.5) * this.blockSize, (-0.5) * this.blockSize); break;
+            //BlockI
+            case 1: this.holdingBlock.setPosition(this.blockSize * (-1.25), 0); break;
+            //block L
+            case 2:  this.holdingBlock.setPosition(this.blockSize * (-0.25) , -this.blockSize); break;
+            //blockLI
+            case 3:  this.holdingBlock.setPosition(this.blockSize * (-0.25), -this.blockSize); break;
+            //block Square: 
+            case 4:  this.holdingBlock.setPosition( -0.5 * this.blockSize, (-0.5) * this.blockSize); break;
+            //block SI:
+            case 5:  this.holdingBlock.setPosition(this.blockSize * (-0.75),  0.5 * this.blockSize); break;
+            //block T
+            case 6:  this.holdingBlock.setPosition(this.blockSize * -0.75, -0.25 * this.blockSize); break;
         }
     }
     initBoard() {
@@ -159,29 +206,37 @@ export default class Game extends cc.Component {
     private canHold: boolean = true;
     private holdingBlockType: number = -1;
     private holdingBlock: cc.Node = null;
+    private flag: number = 0;
     private callBlock(type: number) {
         this.curB.destroy();
         this.curB = cc.instantiate(this.blocks[type]);
         this.node.addChild(this.curB);
         switch (type) {
-            case 0: this.newB = new BlockS; break;
-            case 1: this.newB = new BlockI; break;
-            case 2: this.newB = new BlockL; break;
-            case 3: this.newB = new BlockLI; break;
-            case 4: this.newB = new BlockSquare; break;
-            case 5: this.newB = new BlockSI; break;
-            case 6: this.newB = new BlockT; break;
+            case 0: this.newB = new BlockS; this.cShadow = new BlockS; break;
+            case 1: this.newB = new BlockI; this.cShadow = new BlockI; break;
+            case 2: this.newB = new BlockL; this.cShadow = new BlockL; break;
+            case 3: this.newB = new BlockLI; this.cShadow = new BlockLI; break;
+            case 4: this.newB = new BlockSquare; this.cShadow = new BlockSquare; break;
+            case 5: this.newB = new BlockSI; this.cShadow = new BlockSI; break;
+            case 6: this.newB = new BlockT; this.cShadow = new BlockT; break;
         }
         this.newB.board = this.arr;
         this.newB.node = this.curB;
     }
     // LIFE-CYCLE CALLBACKS:
     onLoad() {
+        this.storeTimer = this.timer;
         this.playSoundTheme();
         this.GameOverPopUp.active = false;
         this.PausePopUp.active = false;
         this.initBoard();
         this.newBlock();
+        cc.game.on(cc.game.EVENT_HIDE, () => {
+            this.isGameOver = true;
+            this.PausePopUp.active = true;
+            this.node.opacity = 50;
+        });
+
         this.PauseButton.on('touchend', () => {
             this.isGameOver = true;
             this.PausePopUp.active = true;
@@ -190,22 +245,21 @@ export default class Game extends cc.Component {
         this.ResumeButton.on('touchend', () => {
             this.isGameOver = false;
             this.PausePopUp.active = false;
-            this.node.opacity = 255;    
+            this.node.opacity = 255;
         })
         this.QuitButton.on('touchend', () => {
-           cc.director.loadScene('intro');
+            cc.director.loadScene('intro');
         })
         this.SoundButton.on('touchend', () => {
             if (Setting.soundState) {
-                cc.audioEngine.pauseAll();
+                cc.audioEngine.stopAll();
                 Setting.soundState = false;
                 let sprite: cc.Sprite = this.SoundButton.getChildByName("Sound").getComponent(cc.Sprite);
                 sprite.spriteFrame = this.SoundOffSprite;
             } else {
                 this.SoundTheme.on;
-                cc.audioEngine.resumeAll();
-                Setting.soundState = true;  
-                console.log(this.SoundButton);
+                cc.audioEngine.playMusic(this.SoundTheme, true);
+                Setting.soundState = true;
                 let sprite: cc.Sprite = this.SoundButton.getChildByName("Sound").getComponent(cc.Sprite);
                 sprite.spriteFrame = this.SoundOnSprite;
             }
@@ -214,12 +268,13 @@ export default class Game extends cc.Component {
             if (this.canHold && !this.isGameOver) {
                 if (this.holdingBlockType == -1) {
                     this.holdingBlockType = this.r;
-                    this.curB.destroy();
-                    this.holdingBlock = cc.instantiate(this.blocks[this.holdingBlockType])
-                    this.HoldBlock.addChild(this.holdingBlock);
-                    this.holdingBlock.zIndex = 0;
-                    this.holdingBlock.setPosition(-10, -10);
-                    this.holdingBlock.setScale(0.8, 0.8);
+                     this.curB.destroy();
+                    // this.holdingBlock = cc.instantiate(this.blocks[this.holdingBlockType])
+                    // this.HoldBlock.addChild(this.holdingBlock);
+                    // this.holdingBlock.zIndex = 0;
+                    // this.holdingBlock.setPosition(-10, -10);
+                    // this.holdingBlock.setScale(0.8, 0.8);
+                    this.addBlockToHold();
                     this.newBlock();
                 } else if (!this.isGameOver) {
                     //there is saved block
@@ -227,58 +282,113 @@ export default class Game extends cc.Component {
                     this.curB.destroy();
                     this.callBlock(this.holdingBlockType);
                     this.holdingBlockType = temp;
-                    this.holdingBlock.destroy();
-                    this.holdingBlock = cc.instantiate(this.blocks[this.holdingBlockType])
-                    this.HoldBlock.addChild(this.holdingBlock);
-                    this.holdingBlock.zIndex = 0;
-                    this.holdingBlock.setPosition(-10, -10);
-                    this.holdingBlock.setScale(0.8, 0.8);
+                    // this.holdingBlock.destroy();
+                    // this.holdingBlock = cc.instantiate(this.blocks[this.holdingBlockType])
+                    // this.HoldBlock.addChild(this.holdingBlock);
+                    // this.holdingBlock.zIndex = 0;
+                    // this.holdingBlock.setPosition(-10, -10);
+                    // this.holdingBlock.setScale(0.8, 0.8);
+                    this.addBlockToHold();
                 }
                 this.canHold = false;
+                this.isDragging = false;
             } else {
             }
         })
         this.node.on('touchstart', (e: cc.Event.EventTouch) => {
             this.startX = e.getLocation().x;
             this.startY = e.getLocation().y;
+            this.flag = 0;
+            this.isDragging = true;
+
         }, this.node);
         this.node.on('touchmove', (e: cc.Event.EventTouch) => {
-            this.isSwipe = true;
+            //   this.isSwipe = false;
+            let distX: number = e.getLocationX();
+            let distY: number = e.getLocationY();
+            let dir = -1;
+            let determine = Math.floor((distX - this.startX) / 20);
+            let moveY = Math.floor(this.startY - distY);
+            if (this.isDragging) {
+                let deltaY = e.getDeltaY();
+                if (deltaY < -20) {
+                    this.doDropNow();
+                    return;
+                } else {
+                }
+                this.isSpeedUp = moveY > 50;
+                if (this.isSpeedUp) {
+                    this.isSwipe = false;
+                }
+                // this.dropNow = moveY > 30;
+                // if (this.dropNow) {
+                //     this.isSwipe = false;
+                // }
+                this.newB.dropNow = true;
+                if (!this.isSpeedUp) {
+                    if (determine > this.flag) {
+                        dir = 0;    //move right
+                        if (this.newB.checkMove(0)) {
+                            this.newB.move(0);
+                            if (Setting.soundState) {
+                                cc.audioEngine.playEffect(this.SoundMove, false);
+                            }
+                            this.flag = determine;
+                            this.isSwipe = true;
+                            this.getShadow();
+                        };
+                    } else if (determine < this.flag) {
+                        //move right
+                        if (this.newB.checkMove(1)) {
+                            this.newB.move(1);
+                            if (Setting.soundState) {
+                                cc.audioEngine.playEffect(this.SoundMove, false);
+                            }
+                            this.flag = determine;
+                            this.isSwipe = true;
+                            this.getShadow();
+                        };
+
+                    } else {
+                        dir = -1;
+                    }
+                }
+
+            }
         }, this.node);
         this.node.on('touchend', (e: cc.Event.EventTouch) => {
             this.endX = e.getLocation().x;
             this.endY = e.getLocation().y;
-            if (Math.abs(this.startX - this.endX) < 100 && (this.endY - this.startY < -50)) {
-                this.isSpeedUp = true;
-                this.isSwipe = false;
-            }
-            if (this.isSwipe) {
-                if (this.endX > this.startX) {
-                    if (this.newB.checkMove(0)) {
-                        this.newB.move(0)
-                    };
+            let y = e.getLocationY();
+            let sy = this.startY;
+          //  if (!this.isDragging) {
+                if (!this.isSpeedUp && !this.isGameOver && !this.isSwipe && Math.abs(e.getLocationY() - this.startY) < 5 && Math.abs(e.getLocationX() - this.startX) < 5) {
+                    this.newB.rotate(false);
+                    cc.audioEngine.playEffect(this.SoundRotate, false);
+                    this.getShadow();
                 } else {
-                    if (this.newB.checkMove(1)) {
-                        this.newB.move(1)
-                    };
+                    this.isSwipe = false;
                 }
-                this.isSwipe = false;
-            } else {
-                //    console.log(this.newB.x);
-                if (!this.isSpeedUp && !this.isGameOver) this.newB.rotate();
-            }
+
+          //  }
+
         }, this.node);
 
     }
+    doDropNow() {
+        try {
+            this.newB.node.setPosition(this.cShadow.node.position);
+        } catch (e) { }
+    }
     playSoundTheme() {
         if (Setting.soundState) {
-            Setting.soundThemeId = cc.audioEngine.playMusic(this.SoundTheme,true);
+            Setting.soundThemeId = cc.audioEngine.playMusic(this.SoundTheme, true);
         } else {
             let sprite: cc.Sprite = this.SoundButton.getChildByName("Sound").getComponent(cc.Sprite);
             sprite.spriteFrame = this.SoundOffSprite;
         }
     }
-    isBreakHighScore() : boolean{
+    isBreakHighScore(): boolean {
         var highscoresJson = cc.sys.localStorage.getItem('highscores');
         var highscores: Array<any> = JSON.parse(highscoresJson);
         if (highscores == null) {
@@ -294,14 +404,13 @@ export default class Game extends cc.Component {
         return false;
     }
     saveHighScore() {
-      //  cc.sys.localStorage.removeItem('highscores');
+        //  cc.sys.localStorage.removeItem('highscores');
         var highscoresJson = cc.sys.localStorage.getItem('highscores');
         var highscores: Array<any> = JSON.parse(highscoresJson);
         if (highscores == null) {
             highscores = [];
         }
         let playerName: string = cc.sys.localStorage.getItem('playerName');
-        console.log(playerName);
         if (playerName == null) {
             playerName = 'Anonymous';
         }
@@ -327,10 +436,10 @@ export default class Game extends cc.Component {
         } catch (e) { return false; };
         return true;
     }
-    checkImpact(): boolean {
-        for (let block of this.newB.node.children) {
+    checkImpact(blocks: Block): boolean {
+        for (let block of blocks.node.children) {
             try {
-                let cell = this.newB.getCell(block);
+                let cell = blocks.getCell(block);
                 if ((this.arr[cell[0] + 1][cell[1]] !== undefined || this.arr[cell[0] + 1][cell[1]] !== null) && this.arr[cell[0] + 1][cell[1]].canDrop == false) {
                     return false;
                 }
@@ -340,13 +449,13 @@ export default class Game extends cc.Component {
         }
         return true;
     }
-    async doEat(y: number) {
-        try {
-            for (let bl of this.arr[y]) {
+    doEat(y: number) {
+        for (let bl of this.arr[y]) {
+            try {
                 bl.destroy();
-            }
-        } catch (e) { };
-
+            } catch (e) { console.log("loi tai eat"); continue; }
+        }
+        cc.audioEngine.playEffect(this.SoundScore, false);
         this.Score += 1000;
         this.scoreLabel.string = this.Score.toString();
     }
@@ -356,53 +465,85 @@ export default class Game extends cc.Component {
             for (let block of this.arr[y - i]) {
                 try {
                     block.y -= 16;
-                } catch (e) { continue; }
+                } catch (e) { console.log("loi tai clean" + e); continue; }
             }
         }
+        this.arr[0] = new Array<cc.Node>(10);
+
     }
-    async delay(ms: number) {
+    delay(ms: number) {
         return new Promise(
             resolve => setTimeout(resolve, ms)
         );
     }
-    async drop(dt, now?: boolean) {
-        //   this.delay(10000);
+    private shadow: cc.Node;
+    private cShadow: any;
+    getShadow() {
+        if (this.shadow) this.shadow.destroy();
+        this.shadow = cc.instantiate(this.newB.node);
+        this.cShadow.node = this.shadow;
+        while (this.cShadow.state != this.newB.state) {
+            this.cShadow.rotate(true);
+        }
+        this.cShadow.calcEnd();
+        while (this.cShadow.endY > -224 && this.checkImpact(this.cShadow)) {
+            this.cShadow.node.setPosition(this.cShadow.node.x, this.cShadow.node.y - 16);
+            this.cShadow.calcEnd();
+        }
+        this.node.addChild(this.shadow);
+        this.shadow.opacity = 50;
+    }
+    drop(dt, now?: boolean) {
+        // if (this.dropNow) {
+        //     this.timer = 0;
+        // } else {
+        //     this.timer = this.storeTimer;
+        //     this.dropNow = false;
+        // }
         this.newB.calcEnd();
+
         if (!this.isGameOver) {
-
-
-            if (this.newB.endY <= -224 || this.checkImpact() == false) {
-                //    await this.delay(1000);
+            if (this.newB.endY <= -224 || this.checkImpact(this.newB) == false) {
+                if (!this.dropNow && this.countTimer < this.timer) {
+                    this.countTimer += dt;
+                    return;
+                }
+                //await this.delay(1000);
                 let dinner: Array<number> = new Array();
-                try {
-                    for (let block of this.newB.node.children) {
+                //    console.log(this.newB.node.children.length);
+                for (let block of this.newB.node.children) {
+                    try {
                         let cell = this.newB.getCell(block);
                         block.canDrop = false;
                         this.arr[cell[0]][cell[1]] = block;
                         this.newB.canDrop = false;
-                    }
-                } catch (e) { };
+                    } catch (e) { return; };
+                }
+                console.log(this.arr);
                 this.Score += 50;
                 this.scoreLabel.string = this.Score.toString();
                 for (let block of this.newB.node.children) {
                     let cell = this.newB.getCell(block);
                     if (this.checkEat(cell[0]) == true) {
-                        dinner.push(cell[0]);
+                        //row nay an duoc nhung chua danh dau
+                        //dinner danh dau nhung row co the an
+                        if (dinner.indexOf(cell[0]) == -1)
+                            dinner.push(cell[0]);
                     }
                 }
                 for (let i of dinner) {
                     this.doEat(i);
-                    console.log("eat line " + i);
                 }
                 dinner.sort(function (a, b) {
                     return a - b;
                 });
                 for (let i of dinner) {
                     this.clean(i);
-                    console.log("clean line " + i);
                 }
-                this.newB = null;
+                delete this.newB.board;
+                delete this.newB;
                 this.newBlock();
+                this.getShadow();
             } else {
                 //   if (this.checkImpact() == true) {
                 if (now || this.countTimer >= this.timer) {
@@ -417,15 +558,13 @@ export default class Game extends cc.Component {
             }
         }
     }
-    async update(dt) {
+    update(dt) {
         if (!this.isGameOver) {
             if (this.isSpeedUp) {
-                await this.drop(dt, true);
-                await this.drop(dt, true);
-                await this.drop(dt, true);
+                this.drop(dt, true);
                 this.isSpeedUp = false;
             } else {
-                await this.drop(dt);
+                this.drop(dt, this.dropNow);
             }
         }
         else {

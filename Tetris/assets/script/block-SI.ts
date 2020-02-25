@@ -38,13 +38,36 @@ export default class BlockSI extends Block {
             this.endX = this.node.x + this.blockSize * 2;
             this.endY = this.node.y - this.blockSize;
         } else {
-            this.endX = this.node.x;
-            this.endY = this.node.y - this.blockSize * 1;
+            this.endX = this.node.x + 2 * this.blockSize;
+            this.endY = this.node.y - this.blockSize;
         }
-        console.log(this.endY);
     }
-    rotate() {
+    canRotate(): boolean {
+        var cell = this.getCell(this.node.getChildByName("1"));
+        try {
+            switch (this.state) {
+                case 0: {
+                    if (this.board[cell[0] - 1][cell[1] + 2] ) return false;
+                    if (this.board[cell[0]][cell[1] + 2]) return false;
+                    break;
+                }
+                case 1: {
+                    if (this.board[cell[0] + 1][cell[1] - 2]) return false;
+                    if (this.board[cell[0] + 2][cell[1]]) return false;
+                    break;
+                }
+            }
+        } catch (e) {
+            return false;
+        };
+
+        return true;
+    }
+    rotate(isShadow: boolean) {
         this.calcEnd();
+        if (!isShadow) {
+            if (!this.canRotate()) return;
+        }
         //   this.node.angle = (this.node.angle - 90) % 180;
         let node1 = this.node.getChildByName("1");
         let node2 = this.node.getChildByName("2");

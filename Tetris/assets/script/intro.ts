@@ -38,40 +38,72 @@ export default class Intro extends cc.Component {
     PlayerName: cc.Label = null;
     @property(cc.AudioClip)
     introMusic: cc.AudioClip = null;
+    @property(cc.SpriteFrame)
+    SoundOnSprite: cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    SoundOffSprite: cc.SpriteFrame = null;
     _isShake = false;
+    start() {
+        this.playIntroMusic();
+    }
+    scaleDown() {
+        let buttons = this.node.getChildByName('Buttons');
+        let title = this.node.children[0].children[1];
+        this.EnterNamePopUp.scale = cc.winSize.width / 400; 
+        console.log(title);
+        title.scale = cc.winSize.width / 400;
+        let objsInButtons = buttons.children;
+        for (let obj of objsInButtons) {
+            obj.scale = cc.winSize.width / 400;
+        }
+    }
     onLoad() {
+        this.scaleDown()
         this.loadPlayerName();
         this.EnterNamePopUp.active = false;
         this.playButton.on('touchend', () => {
-            console.log("Play touched")
             cc.director.loadScene('game');
         });
         this.highScoreButton.on('touchend', () => {
-            console.log("Highscore touched");
             cc.director.loadScene('leaderboards');
         })
         this.EnterNameButton.on('touchend', () => {
-            console.log("Enter name clicked");
             this.openPopup();
         })
         this.OkButton.on('touchend', () => {
             this.saveName();
-            this.closePopup();
          //   this.closePopup();
         })
         this.CancelButton.on('touchend', () => {
             this.closePopup();
         })
+        this.settingButton.on('touchend', () =>{
+            this.turnSound();
+        })
+    }
+    turnSound() {
+        if (Setting.soundState == true) {
+            Setting.soundState = false;
+            cc.audioEngine.stopAll();
+            let sprite: cc.Sprite = this.settingButton.getComponent(cc.Sprite);
+            sprite.spriteFrame = this.SoundOffSprite;
+        } else {
+            Setting.soundState = true;
+            cc.audioEngine.playMusic(this.introMusic, true);
+            let sprite: cc.Sprite = this.settingButton.getComponent(cc.Sprite);
+            sprite.spriteFrame = this.SoundOnSprite;
+        }
     }
     playIntroMusic() {
         if (Setting.soundState) {
-            cc.audioEngine.pauseAll();
-            Setting.soundState = false;
+            cc.audioEngine.playMusic(this.introMusic, true);
         } else {
-            this.introMusic.on;
-            cc.audioEngine.resumeAll();
-            Setting.soundState = true;  
+            cc.audioEngine.stopAll();
+            let sprite: cc.Sprite = this.settingButton.getComponent(cc.Sprite);
+            sprite.spriteFrame = this.SoundOffSprite;
         }
+        
+        
     }
     loadPlayerName() {
         let playerName: string = cc.sys.localStorage.getItem('playerName');
@@ -94,12 +126,11 @@ export default class Intro extends cc.Component {
     saveName() {
         let name: string = this.EditNameEB.string;
         if (this.EditNameEB.string == "") {
-            console.log("Please enter name");
             this._isShake = true;
         } else {
-            console.log("Your name: " + name);
             cc.sys.localStorage.setItem('playerName', name);
             this.PlayerName.string = name;
+            this.closePopup();
         }
 
     }

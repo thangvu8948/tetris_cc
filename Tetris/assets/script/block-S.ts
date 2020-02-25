@@ -42,9 +42,28 @@ export default class BlockS extends Block {
             this.endY = this.node.y;
         }
     }
-    rotate() {
+    canRotate(): boolean {
+        var cell = this.getCell(this.node.getChildByName("1"));
+        try {
+            if (this.state == 0) {
+                if (this.board[cell[0] - 2][cell[1]] != null || this.board[cell[0] - 2][cell[1]] != undefined) return false;
+                if (this.board[cell[0] - 1][cell[1]] != null || this.board[cell[0] - 1][cell[1]] != undefined) return false;
+            } else {
+                if (this.board[cell[0] + 2][cell[1]] != null || this.board[cell[0] + 2][cell[1]] != undefined) return false;
+                if (this.board[cell[0] + 1][cell[1] + 2] != null || this.board[cell[0] + 1][cell[1] + 2] != undefined) return false;
+                
+            }
+        } catch(e){
+            return false;
+        };
+
+        return true;
+    }
+    rotate(isShadow: boolean) {
         this.calcEnd();
-        //   this.node.angle = (this.node.angle - 90) % 180;
+        if (!isShadow) {
+            if (!this.canRotate()) return;
+        }
         let node1 = this.node.getChildByName("1");
         let node2 = this.node.getChildByName("2");
         let node3 = this.node.getChildByName("3");

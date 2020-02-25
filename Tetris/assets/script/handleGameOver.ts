@@ -57,6 +57,5 @@ export default class GameOver extends cc.Component {
             }
             this.count = 0;
         }
-        console.log(this.stateOfColor);
     }
 }

@@ -1,3 +1,5 @@
+import Setting from "./settings";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -24,10 +26,13 @@ export default class Block extends cc.Component {
     endY: number;
     canDrop:boolean = true;
     private countTimer: number = 0;
-    board: any;
-    
+    board: Array<cc.Node>;
+    isSpeedUp: boolean = false;
+    isDropNow: boolean = false;
     onLoad () {
+        
     }
+    calcEnd(){};
     checkMove(dir: number) :boolean {
         for (let block of this.node.children) {
             let cell = this.getCell(block);
@@ -37,12 +42,10 @@ export default class Block extends cc.Component {
                 switch(dir) {
                     case 0: 
                         if ((rightCell != null || rightCell != undefined) && rightCell.canDrop == false){
-                            console.log(rightCell);
                             return false;
                         } else break;
                     case 1:
                         if ((leftCell != null || leftCell != undefined) && leftCell.canDrop == false) {
-                            console.log(leftCell);
                             return false;
                         } else break;
                 }
@@ -63,6 +66,7 @@ export default class Block extends cc.Component {
                 this.node.x -= this.blockSize;
             }
         }
+
     }
 
     getCell(node: cc.Node){
@@ -152,7 +156,11 @@ export default class Block extends cc.Component {
     //         }
     //     }
     // }
-
+    getShadow() {
+        let shadowBlock = cc.instantiate(this.node);
+        this.node.parent.addChild(shadowBlock);
+        shadowBlock.opacity = 50;
+    }
      update (dt) {
 
         //  if (this.checkDrop()) {

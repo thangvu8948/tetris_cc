@@ -86,9 +86,11 @@ export default class BlockI extends Block {
             node4.anchorY = 0.5
         }
     }
-    rotate() {
-        if (!this.canRotate()) return;
+    rotate(isShadow: boolean) {
         this.calcEnd();
+        if (!isShadow) {
+            if (!this.canRotate()) return;
+        }       
         //   this.node.angle = (this.node.angle - 90) % 180;
         let node1 = this.node.getChildByName("1");
         let node2 = this.node.getChildByName("2");

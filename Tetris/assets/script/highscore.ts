@@ -32,7 +32,6 @@ export default class NewClass extends cc.Component {
     loadHighScore() {
         let highscoresJson = cc.sys.localStorage.getItem('highscores');
         let highscores: Array<any> = JSON.parse(highscoresJson);
-        console.log(highscores);
         if (highscoresJson) {
             let i: number = 0;
             for (let highscore of highscores) {
