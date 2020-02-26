@@ -68,7 +68,7 @@ export default class Block extends cc.Component {
         }
 
     }
-   // rotate(isShadow?: boolean){};
+    rotate(isShadow?: boolean){};
     getCell(node: cc.Node){
         let anchorX = node.anchorX;
         let anchorY = node.anchorY;
