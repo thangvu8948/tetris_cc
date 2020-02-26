@@ -68,16 +68,16 @@ export default class Block extends cc.Component {
         }
 
     }
-
+   // rotate(isShadow?: boolean){};
     getCell(node: cc.Node){
         let anchorX = node.anchorX;
         let anchorY = node.anchorY;
         let coorX:number;
         let coorY: number;
-        coorX = (-anchorX + 0.5) * this.blockSize;
-        coorY = (-anchorY + 0.5) * this.blockSize;
-        let cellX = (this.node.x + 72 + coorX)/16;
-        let cellY = -(this.node.y - 144 + coorY)/16;
+        coorX = (-anchorX ) * this.blockSize;
+        coorY = (-anchorY) * this.blockSize;
+        let cellX = Math.ceil((this.node.x + coorX)/16 - 1);
+        let cellY = Math.ceil(24 - (this.node.y + coorY)/16);
         return [cellY,cellX];
     }
 

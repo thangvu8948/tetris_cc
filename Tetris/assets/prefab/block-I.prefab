@@ -54,15 +54,15 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_trs": {
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -8,
-        112,
+        64,
+        384,
         0,
         0,
         0,
@@ -121,8 +121,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_trs": {
       "__type__": "TypedArray",
@@ -155,7 +155,7 @@
   },
   {
     "__type__": "cc.Sprite",
-    "_name": "",
+    "_name": "1<Sprite>",
     "_objFlags": 0,
     "node": {
       "__id__": 2
@@ -242,8 +242,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": -0.5,
-      "y": 0.5
+      "x": -1,
+      "y": 0
     },
     "_trs": {
       "__type__": "TypedArray",
@@ -276,7 +276,7 @@
   },
   {
     "__type__": "cc.Sprite",
-    "_name": "",
+    "_name": "2<Sprite>",
     "_objFlags": 0,
     "node": {
       "__id__": 6
@@ -363,8 +363,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": -1.5,
-      "y": 0.5
+      "x": -2,
+      "y": 0
     },
     "_trs": {
       "__type__": "TypedArray",
@@ -397,7 +397,7 @@
   },
   {
     "__type__": "cc.Sprite",
-    "_name": "",
+    "_name": "3<Sprite>",
     "_objFlags": 0,
     "node": {
       "__id__": 10
@@ -484,8 +484,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": -2.5,
-      "y": 0.5
+      "x": -3,
+      "y": 0
     },
     "_trs": {
       "__type__": "TypedArray",
@@ -518,7 +518,7 @@
   },
   {
     "__type__": "cc.Sprite",
-    "_name": "",
+    "_name": "4<Sprite>",
     "_objFlags": 0,
     "node": {
       "__id__": 14

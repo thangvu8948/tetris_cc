@@ -21,12 +21,12 @@ export default class BlockSquare extends Block {
         switch (dir) {
             //case right:
             case 0: {
-                if (this.endX < 72) return true;
+                if (this.endX <  (0+this.blockSize * 10)) return true;
                 break;
             }
             //case left:
             case 1: {
-                if (this.node.x >= -56) return true;
+                if (this.node.x >=  (0+this.blockSize * 2)) return true;
             }
         }
         return false;

@@ -21,7 +21,7 @@ export default class BlockT extends Block {
         switch (dir) {
             //case right:
             case 0: {
-                if (this.endX < 72) return true;
+                if (this.endX < (this.blockSize * 10)) return true;
                 break;
             }
             //case left:
@@ -30,10 +30,10 @@ export default class BlockT extends Block {
                     case 0: 
                     case 2:
                     case 3:
-                        if (this.node.x >= -56) return true;
+                        if (this.node.x >= (0+this.blockSize * 2)) return true;
                         break;
                     case 1: 
-                        if (this.node.x +16 >= -56) return true;
+                        if (this.node.x +16 >= (0+this.blockSize * 2)) return true;
                 }
             }
         }
@@ -62,7 +62,7 @@ export default class BlockT extends Block {
         }
     }
     canRotate(): boolean {
-        var cell = this.getCell(this.node.getChildByName("1"));
+        var cell = this.getCell(this.node.children[0]);
         try {
             switch (this.state) {
                 case 0: {
@@ -94,36 +94,36 @@ export default class BlockT extends Block {
             if (!this.canRotate()) return;
         }
         //   this.node.angle = (this.node.angle - 90) % 180;
-        let node1 = this.node.getChildByName("1");
-        let node2 = this.node.getChildByName("2");
-        let node3 = this.node.getChildByName("3");
-        let node4 = this.node.getChildByName("4");
+        let node1 = this.node.children[0];
+        let node2 = this.node.children[1];
+        let node3 = this.node.children[2];
+        let node4 = this.node.children[3];
         //Block-S
 
         switch (this.state) {
             case 0:
-                node1.setAnchorPoint(-0.5, 1.5);
+                node1.setAnchorPoint(-1, 1);
                 break;
             case 1:
-                node4.setAnchorPoint(0.5, 0.5);
+                node4.setAnchorPoint(0, 0);
                 break;
             case 2:
-                node3.setAnchorPoint(-0.5, -0.5);
+                node3.setAnchorPoint(-1, -1);
                 break;
             case 3:
-                node1.setAnchorPoint(0.5, 0.5);
-                node3.setAnchorPoint(-1.5, 0.5);
-                node4.setAnchorPoint(-0.5, -0.5);
+                node1.setAnchorPoint(0, 0);
+                node3.setAnchorPoint(-2, 0);
+                node4.setAnchorPoint(-1, -1);
                 break;
         }
         this.state = (this.state + 1) % 4;
         this.calcEnd()
-        while (this.endX > 72) {
-            this.node.setPosition(this.node.x - 16, this.node.y);
+        while (this.endX > (this.blockSize * 10)) {
+            this.node.setPosition(this.node.x - this.blockSize, this.node.y);
             this.calcEnd();
         }
-        while (this.endX < -56 || (this.state == 2 && this.node.x + 16 < -56)) {
-            this.node.setPosition(this.node.x + 16, this.node.y);
+        while (this.endX < (this.blockSize*2) || (this.state == 2 && this.node.x + this.blockSize < (this.blockSize * 2))) {
+            this.node.setPosition(this.node.x + this.blockSize, this.node.y);
             this.calcEnd();
         }
     }

@@ -14,22 +14,21 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class BlockI extends Block {
-
     checkMove(dir: number): boolean {
         if (!super.checkMove(dir)) return false;
         this.calcEnd();
         switch (dir) {
             //case right:
             case 0: {
-                if (this.endX < 72) return true;
+                if (this.endX <  (0+this.blockSize * 10)) return true;
                 break;
             }
             //case left:
             case 1: {
                 if (this.state == 0) {
-                    if (this.node.x >= -56) return true;
+                    if (this.node.x >=  (0+this.blockSize * 2)) return true;
                 } else {
-                    if (this.node.x >= -72) return true;
+                    if (this.node.x >=   (0+this.blockSize)) return true;
                 }
             }
         }
@@ -47,7 +46,7 @@ export default class BlockI extends Block {
     }
 
     canRotate(): boolean {
-        var cell = this.getCell(this.node.getChildByName("1"));
+        var cell = this.getCell(this.node.children[0]);
         try {
             if (this.state == 0) {
                 if (this.board[cell[0] + 1][cell[1] + 1] != null || this.board[cell[0] + 1][cell[1] + 1] != undefined) return false;
@@ -65,25 +64,25 @@ export default class BlockI extends Block {
         return true;
     }
     doRotate(node: cc.Node) {
-        let node1 = node.getChildByName("1");
-        let node2 = node.getChildByName("2");
-        let node3 = node.getChildByName("3");
-        let node4 = node.getChildByName("4");
+        let node1 = node.children[0];
+        let node2 = node.children[1];
+        let node3 = node.children[2];
+        let node4 = node.children[3];
 
         if (this.state == 0) {
-            node1.anchorX = -0.5;
-            node1.anchorY = 1.5;
-            node3.anchorX = -0.5;
-            node4.anchorX = -0.5;
-            node3.anchorY = -0.5;
-            node4.anchorY = -1.5
+            node1.anchorX = -2;
+            node1.anchorY = 1;
+            node3.anchorX = -1;
+            node4.anchorX = -1;
+            node3.anchorY = -1;
+            node4.anchorY = -2;
         } else {
             node1.anchorX = 0.5;
             node1.anchorY = 0.5;
             node3.anchorX = -1.5;
             node3.anchorY = 0.5;
             node4.anchorX = -2.5;
-            node4.anchorY = 0.5
+            node4.anchorY = 0.5;
         }
     }
     rotate(isShadow: boolean) {
@@ -102,31 +101,31 @@ export default class BlockI extends Block {
         this.doRotate(clone);
 
         if (this.state == 0) {
-            node1.anchorX = -0.5;
-            node1.anchorY = 1.5;
-            node3.anchorX = -0.5;
-            node4.anchorX = -0.5;
-            node3.anchorY = -0.5;
-            node4.anchorY = -1.5
+            node1.anchorX = -1;
+            node1.anchorY = 1;
+            node3.anchorX = -1;
+            node4.anchorX = -1;
+            node3.anchorY = -1;
+            node4.anchorY = -2;
         } else {
-            node1.anchorX = 0.5;
-            node1.anchorY = 0.5;
-            node3.anchorX = -1.5;
-            node3.anchorY = 0.5;
-            node4.anchorX = -2.5;
-            node4.anchorY = 0.5
+            node1.anchorX = 0;
+            node1.anchorY = 0;
+            node3.anchorX = -2;
+            node3.anchorY = 0;
+            node4.anchorX = -3;
+            node4.anchorY = 0;
         }
         this.state = this.state == 0 ? 1 : 0;
         this.calcEnd()
-        while (this.endX > 72) {
+        while (this.endX > (this.blockSize * 10)) {
             this.node.setPosition(this.node.x - 16, this.node.y);
             this.calcEnd();
         }
-        while (this.node.x < -56 && this.state == 1) {
+        while (this.node.x < (this.blockSize * 2) && this.state == 1) {
             this.node.setPosition(this.node.x + 16, this.node.y);
             this.calcEnd();
         }
-        while (this.node.x < -72 && this.state == 0) {
+        while (this.node.x < this.blockSize && this.state == 0) {
             this.node.setPosition(this.node.x + 16, this.node.y);
             this.calcEnd();
         }

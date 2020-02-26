@@ -26,12 +26,13 @@ export default class Game extends cc.Component {
 
     @property({ type: [cc.Prefab] })
     blocks: cc.Prefab[] = [];
-
+    @property(cc.Label)
+    scoreLabel: cc.Label = null;
     @property
     timer: number = 2;
 
-    @property(cc.Label)
-    scoreLabel: cc.Label = null;
+    @property(cc.Node)
+    canvas: cc.Node = null;
 
     @property(cc.Node)
     NextBlock: cc.Node = null;
@@ -72,8 +73,8 @@ export default class Game extends cc.Component {
     SoundOnSprite: cc.SpriteFrame = null;
     @property(cc.SpriteFrame)
     SoundOffSprite: cc.SpriteFrame = null;
-    @property(cc.Node)
-    Board: cc.Node = null;
+    @property(cc.Prefab)
+    particle: cc.Prefab = null;
 
     private newB: Block = null;
     private countTimer: number = 0;
@@ -95,6 +96,7 @@ export default class Game extends cc.Component {
     private storeTimer: number = this.timer;
     private isDragging: boolean = false;
     private blockSize: number = 16;
+
     random(): number {
         return Math.floor(Math.random() * Math.floor(this.blocks.length));
     }
@@ -109,7 +111,7 @@ export default class Game extends cc.Component {
             this.r = this.next;
         }
         this.next = this.random();
-        this.Board.addChild(this.curB);
+        this.node.addChild(this.curB);
 
         switch (this.r) {
             case 0: this.newB = new BlockS; this.cShadow = new BlockS; break;
@@ -119,10 +121,10 @@ export default class Game extends cc.Component {
             case 4: this.newB = new BlockSquare; this.cShadow = new BlockSquare; break;
             case 5: this.newB = new BlockSI; this.cShadow = new BlockSI; break;
             case 6: this.newB = new BlockT; this.cShadow = new BlockT; break;
-
         }
         this.newB.board = this.arr;
         this.newB.node = this.curB;
+        this.newB.blockSize = this.blockSize;
         this.getShadow();
         if (this.nextNode) this.nextNode.destroy();
         this.addBlockToNext();
@@ -158,19 +160,19 @@ export default class Game extends cc.Component {
         //set position for next block
         switch (this.next) {
             //BlockS
-            case 0: this.nextNode.setPosition(-this.blockSize, -0.5 * this.blockSize); break;
+            case 0: this.nextNode.setPosition((-1.25) * this.blockSize, (-0.75) * this.blockSize); break;
             //BlockI
-            case 1: this.nextNode.setPosition(-this.blockSize * 1.25, 0); break;
+            case 1: this.nextNode.setPosition(this.blockSize * (-1.625), this.blockSize * (-0.5)); break;
             //block L
-            case 2: this.nextNode.setPosition(-this.blockSize * 0.5, -this.blockSize); break;
+            case 2: this.nextNode.setPosition(this.blockSize * (-0.75), (-1.25) * this.blockSize); break;
             //blockLI
-            case 3: this.nextNode.setPosition(-this.blockSize * 0.5, -this.blockSize); break;
-            //block Square: 
-            case 4: this.nextNode.setPosition(- this.blockSize * 0.5, (-0.5) * this.blockSize); break;
-            //block SI:
-            case 5: this.nextNode.setPosition(-this.blockSize, 0.5 * this.blockSize); break;
+            case 3: this.nextNode.setPosition(this.blockSize * (-0.75), (-1.25) * this.blockSize); break;
+            //block Square
+            case 4: this.nextNode.setPosition(-0.75 * this.blockSize, (-0.75) * this.blockSize); break;
+            //block SI
+            case 5: this.nextNode.setPosition(this.blockSize * (-1.25), 0); break;
             //block T
-            case 6: this.nextNode.setPosition(-this.blockSize, -0.5 * this.blockSize); break;
+            case 6: this.nextNode.setPosition(this.blockSize * -1.25, -0.75 * this.blockSize); break;
         }
     }
     addBlockToHold() {
@@ -183,19 +185,19 @@ export default class Game extends cc.Component {
         //set position for next block
         switch (this.holdingBlockType) {
             //BlockS
-            case 0: this.holdingBlock.setPosition((-0.5) * this.blockSize, (-0.5) * this.blockSize); break;
+            case 0: this.holdingBlock.setPosition((-1.25) * this.blockSize, (-0.75) * this.blockSize); break;
             //BlockI
-            case 1: this.holdingBlock.setPosition(this.blockSize * (-1.25), 0); break;
+            case 1: this.holdingBlock.setPosition(this.blockSize * (-1.625), this.blockSize * (-0.5)); break;
             //block L
-            case 2: this.holdingBlock.setPosition(this.blockSize * (-0.25), -this.blockSize); break;
+            case 2: this.holdingBlock.setPosition(this.blockSize * (-0.75), (-1.25) * this.blockSize); break;
             //blockLI
-            case 3: this.holdingBlock.setPosition(this.blockSize * (-0.25), -this.blockSize); break;
+            case 3: this.holdingBlock.setPosition(this.blockSize * (-0.75), (-1.25) * this.blockSize); break;
             //block Square: 
-            case 4: this.holdingBlock.setPosition(-0.5 * this.blockSize, (-0.5) * this.blockSize); break;
+            case 4: this.holdingBlock.setPosition(-0.75 * this.blockSize, (-0.75) * this.blockSize); break;
             //block SI:
-            case 5: this.holdingBlock.setPosition(this.blockSize * (-0.75), 0.5 * this.blockSize); break;
+            case 5: this.holdingBlock.setPosition(this.blockSize * (-1.25), 0); break;
             //block T
-            case 6: this.holdingBlock.setPosition(this.blockSize * -0.75, -0.25 * this.blockSize); break;
+            case 6: this.holdingBlock.setPosition(this.blockSize * -1.25, -0.75 * this.blockSize); break;
         }
     }
     initBoard() {
@@ -211,7 +213,7 @@ export default class Game extends cc.Component {
     private callBlock(type: number) {
         this.curB.destroy();
         this.curB = cc.instantiate(this.blocks[type]);
-        this.Board.addChild(this.curB);
+        this.node.addChild(this.curB);
         switch (type) {
             case 0: this.newB = new BlockS; this.cShadow = new BlockS; break;
             case 1: this.newB = new BlockI; this.cShadow = new BlockI; break;
@@ -225,7 +227,23 @@ export default class Game extends cc.Component {
         this.newB.node = this.curB;
     }
     // LIFE-CYCLE CALLBACKS:
+    scaleScreen() {
+        let currentScreenRatio: number = cc.winSize.width / cc.winSize.height;
+        const gameRatio: number = 400 / 600;
+        if (currentScreenRatio < 0.5) {
+            this.node.scaleX = 0.95;
+            this.node.scaleY = 1.05;
+
+        } else {
+            let widget: cc.Widget = this.node.getComponent(cc.Widget);
+            widget.horizontalCenter = -35;
+            widget.isAlignHorizontalCenter = true;
+            this.node.scale = 1.1;
+        }
+    }
     onLoad() {
+        this.scaleScreen();
+
         this.storeTimer = this.timer;
         this.playSoundTheme();
         this.GameOverPopUp.active = false;
@@ -235,18 +253,18 @@ export default class Game extends cc.Component {
         cc.game.on(cc.game.EVENT_HIDE, () => {
             this.isGameOver = true;
             this.PausePopUp.active = true;
-            this.node.opacity = 50;
+            this.canvas.opacity = 50;
         });
 
         this.PauseButton.on('touchend', () => {
             this.isGameOver = true;
             this.PausePopUp.active = true;
-            this.node.opacity = 50;
+            this.canvas.opacity = 50;
         });
         this.ResumeButton.on('touchend', () => {
             this.isGameOver = false;
             this.PausePopUp.active = false;
-            this.node.opacity = 255;
+            this.canvas.opacity = 255;
         })
         this.QuitButton.on('touchend', () => {
             cc.director.loadScene('intro');
@@ -296,14 +314,14 @@ export default class Game extends cc.Component {
             } else {
             }
         })
-        this.node.on('touchstart', (e: cc.Event.EventTouch) => {
+        this.canvas.on('touchstart', (e: cc.Event.EventTouch) => {
             this.startX = e.getLocation().x;
             this.startY = e.getLocation().y;
             this.flag = 0;
             this.isDragging = true;
 
         }, this.node);
-        this.node.on('touchmove', (e: cc.Event.EventTouch) => {
+        this.canvas.on('touchmove', (e: cc.Event.EventTouch) => {
             //   this.isSwipe = false;
             let distX: number = e.getLocationX();
             let distY: number = e.getLocationY();
@@ -357,7 +375,7 @@ export default class Game extends cc.Component {
 
             }
         }, this.node);
-        this.node.on('touchend', (e: cc.Event.EventTouch) => {
+        this.canvas.on('touchend', (e: cc.Event.EventTouch) => {
             this.endX = e.getLocation().x;
             this.endY = e.getLocation().y;
             let y = e.getLocationY();
@@ -454,7 +472,7 @@ export default class Game extends cc.Component {
         for (let bl of this.arr[y]) {
             try {
                 bl.destroy();
-            } catch (e) { console.log("loi tai eat"); continue; }
+            } catch (e) {continue; }
         }
         cc.audioEngine.playEffect(this.SoundScore, false);
         this.Score += 1000;
@@ -466,7 +484,7 @@ export default class Game extends cc.Component {
             for (let block of this.arr[y - i]) {
                 try {
                     block.y -= 16;
-                } catch (e) { console.log("loi tai clean" + e); continue; }
+                } catch (e) { continue; }
             }
         }
         this.arr[0] = new Array<cc.Node>(10);
@@ -490,9 +508,10 @@ export default class Game extends cc.Component {
             this.cShadow.node.setPosition(this.cShadow.node.x, this.cShadow.node.y - 16);
             this.cShadow.calcEnd();
         }
-        this.Board.addChild(this.shadow);
+        this.node.addChild(this.shadow);
         this.shadow.opacity = 50;
     }
+    dinner: Array<number>
     drop(dt, now?: boolean) {
         // if (this.dropNow) {
         //     this.timer = 0;
@@ -501,15 +520,14 @@ export default class Game extends cc.Component {
         //     this.dropNow = false;
         // }
         this.newB.calcEnd();
-
         if (!this.isGameOver) {
-            if (this.newB.endY > (0 + this.blockSize) || this.checkImpact(this.newB) == false) {
+            if (this.newB.endY <= (0 + this.blockSize) || this.checkImpact(this.newB) == false) {
                 if (!this.dropNow && this.countTimer < this.timer) {
                     this.countTimer += dt;
                     return;
                 }
+                this.dinner = new Array();
                 //await this.delay(1000);
-                let dinner: Array<number> = new Array();
                 //    console.log(this.newB.node.children.length);
                 for (let block of this.newB.node.children) {
                     try {
@@ -519,7 +537,6 @@ export default class Game extends cc.Component {
                         this.newB.canDrop = false;
                     } catch (e) { return; };
                 }
-                console.log(this.arr);
                 this.Score += 50;
                 this.scoreLabel.string = this.Score.toString();
                 for (let block of this.newB.node.children) {
@@ -527,17 +544,17 @@ export default class Game extends cc.Component {
                     if (this.checkEat(cell[0]) == true) {
                         //row nay an duoc nhung chua danh dau
                         //dinner danh dau nhung row co the an
-                        if (dinner.indexOf(cell[0]) == -1)
-                            dinner.push(cell[0]);
+                        if (this.dinner.indexOf(cell[0]) == -1)
+                            this.dinner.push(cell[0]);
                     }
                 }
-                for (let i of dinner) {
+                for (let i of this.dinner) {
                     this.doEat(i);
                 }
-                dinner.sort(function (a, b) {
+                this.dinner.sort(function (a, b) {
                     return a - b;
                 });
-                for (let i of dinner) {
+                for (let i of this.dinner) {
                     this.clean(i);
                 }
                 delete this.newB.board;
@@ -557,6 +574,23 @@ export default class Game extends cc.Component {
                 //   this.newB.node.y -= 16;
             }
         }
+    }
+    atom: cc.Node = null;
+    lateUpdate() {
+        try{
+            if (this.dinner.length > 0) {
+                console.log("ate something");
+                if (this.atom) {
+                    this.atom.destroy();
+                }
+                this.atom = cc.instantiate(this.particle);
+                this.atom.x = (this.blockSize * 10) / 2;
+                this.atom.y = (24 - this.dinner[0]) * this.blockSize;
+                this.node.addChild(this.atom); 
+                this.dinner = [];
+            }
+        } catch(e){};
+
     }
     update(dt) {
         if (!this.isGameOver) {
