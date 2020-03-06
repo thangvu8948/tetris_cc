@@ -99,23 +99,27 @@ export default class BlockL extends Block {
         switch (this.state) {
             //default
             case 0:
-                node2.setAnchorPoint(-1, -1);
-                node4.setAnchorPoint(-2, -1);
+                node2.setPosition(this.offset, this.offset + this.blockSize);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node4.setPosition(this.offset + this.blockSize * 2, this.offset + this.blockSize);
                 break;
             case 1:
-                node1.setAnchorPoint(-1, 0);
-                node3.setAnchorPoint(-1, -2);
-                node4.setAnchorPoint(0, -2);
+                node1.setPosition(this.offset, this.offset + this.blockSize * 2);
+                node2.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node4.setPosition(this.offset + this.blockSize, this.offset);
                 break;
             case 2:
-                node1.setAnchorPoint(0, 0);
-                node2.setAnchorPoint(-1, 0);
-                node3.setAnchorPoint(-2, 0);
-                node4.setAnchorPoint(-2, -1);
+                node1.setPosition(this.offset, this.offset);
+                node2.setPosition(this.offset + this.blockSize, this.offset);
+                node3.setPosition(this.offset + this.blockSize * 2, this.offset);
+                node4.setPosition(this.offset + this.blockSize * 2, this.offset + this.blockSize);
                 break;
             case 3:
-                node3.setAnchorPoint(0, -1);
-                node4.setAnchorPoint(0, -2);
+                node1.setPosition(this.offset, this.offset);
+                node2.setPosition(this.offset + this.blockSize, this.offset);
+                node3.setPosition(this.offset, this.offset + this.blockSize);
+                node4.setPosition(this.offset, this.offset + this.blockSize * 2 );
                 break;
         }
         this.state = (this.state + 1) % 4;

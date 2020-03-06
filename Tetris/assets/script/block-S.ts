@@ -27,7 +27,8 @@ export default class BlockS extends Block {
             }
             //case left:
             case 1: {
-                if (this.node.x >= (0+this.blockSize * 2)) return true;
+
+                if (this.node.x + ((this.state == 0) ? this.state : 0 * this.blockSize) >= (0+this.blockSize * 2)) return true;
             }
         }
         return false;
@@ -71,11 +72,15 @@ export default class BlockS extends Block {
         //Block-S
 
         if (this.state == 0) {
-            node1.anchorY = -2;
-            node4.anchorX = 0;
+            node1.setPosition(this.offset , this.offset + this.blockSize*2);
+            node2.setPosition(this.offset, this.offset + this.blockSize);
+            node3.setPosition(this.offset + this.blockSize , this.offset + this.blockSize);
+            node4.setPosition(this.offset + this.blockSize, this.offset);
         } else {
-            node1.anchorY = 0;
-            node4.anchorX = -2;
+            node1.setPosition(this.offset, this.offset);
+            node2.setPosition(this.offset + this.blockSize, this.offset);
+            node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+            node4.setPosition(this.offset + this.blockSize * 2, this.offset + this.blockSize);
         }
         this.state = this.state == 0 ? 1 : 0;
         this.calcEnd()

@@ -32,7 +32,7 @@ export default class BlockSquare extends Block {
         return false;
     }
     rotate() {
-
+        
     }
     calcEnd() {
         this.endX = this.node.x + this.blockSize;

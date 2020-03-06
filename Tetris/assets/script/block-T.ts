@@ -48,15 +48,15 @@ export default class BlockT extends Block {
                 break;
             case 1:
                 this.endX = this.node.x + this.blockSize * 2;
-                this.endY = this.node.y - this.blockSize;
+                this.endY = this.node.y;
                 break;
             case 2:
                 this.endX = this.node.x + this.blockSize * 2;
-                this.endY = this.node.y - this.blockSize;
+                this.endY = this.node.y;
                 break;
             case 3:
                 this.endX = this.node.x + this.blockSize;
-                this.endY = this.node.y - this.blockSize;
+                this.endY = this.node.y;
                 break;
             
         }
@@ -102,18 +102,28 @@ export default class BlockT extends Block {
 
         switch (this.state) {
             case 0:
-                node1.setAnchorPoint(-1, 1);
+                node1.setPosition(this.offset + this.blockSize * 2, this.offset + this.blockSize);
+                node2.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 1);
+                node4.setPosition(this.offset + this.blockSize, this.offset);
                 break;
             case 1:
-                node4.setAnchorPoint(0, 0);
+                node1.setPosition(this.offset + this.blockSize, this.offset);
+                node2.setPosition(this.offset, this.offset + this.blockSize);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node4.setPosition(this.offset + 2 * this.blockSize, this.offset + this.blockSize);
                 break;
             case 2:
-                node3.setAnchorPoint(-1, -1);
+                node1.setPosition(this.offset, this.offset + this.blockSize);
+                node2.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 1);
+                node4.setPosition(this.offset + this.blockSize, this.offset);
                 break;
             case 3:
-                node1.setAnchorPoint(0, 0);
-                node3.setAnchorPoint(-2, 0);
-                node4.setAnchorPoint(-1, -1);
+                node1.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node2.setPosition(this.offset, this.offset);
+                node3.setPosition(this.offset + this.blockSize, this.offset);
+                node4.setPosition(this.offset + 2 * this.blockSize, this.offset);
                 break;
         }
         this.state = (this.state + 1) % 4;

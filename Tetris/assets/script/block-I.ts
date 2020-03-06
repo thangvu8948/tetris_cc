@@ -87,6 +87,7 @@ export default class BlockI extends Block {
     }
     rotate(isShadow: boolean) {
         this.calcEnd();
+       // this.node.angle += 90;
         if (!isShadow) {
             if (!this.canRotate()) return;
         }       
@@ -98,22 +99,18 @@ export default class BlockI extends Block {
 
         let clone = new cc.Node();
         clone = this.node;
-        this.doRotate(clone);
-
+      //  this.doRotate(clone);
+        
         if (this.state == 0) {
-            node1.anchorX = -1;
-            node1.anchorY = 1;
-            node3.anchorX = -1;
-            node4.anchorX = -1;
-            node3.anchorY = -1;
-            node4.anchorY = -2;
+            node1.setPosition(this.offset + this.blockSize, this.offset - this.blockSize);
+            node2.setPosition(this.offset + this.blockSize, this.offset);
+            node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+            node4.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
         } else {
-            node1.anchorX = 0;
-            node1.anchorY = 0;
-            node3.anchorX = -2;
-            node3.anchorY = 0;
-            node4.anchorX = -3;
-            node4.anchorY = 0;
+            node1.setPosition(this.offset, this.offset);
+            node2.setPosition(this.offset + this.blockSize, this.offset);
+            node3.setPosition(this.offset + this.blockSize * 2, this.offset);
+            node4.setPosition(this.offset + this.blockSize * 3, this.offset);
         }
         this.state = this.state == 0 ? 1 : 0;
         this.calcEnd()

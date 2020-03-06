@@ -21,12 +21,12 @@ export default class BlockSI extends Block {
         switch (dir) {
             //case right:
             case 0: {
-                if (this.endX <  (0+this.blockSize * 10)) return true;
+                if (this.endX <  (0 + this.blockSize * 10)) return true;
                 break;
             }
             //case left:
             case 1: {
-                    if (this.node.x + this.state * this.blockSize >=(0+this.blockSize * 2)) return true;
+                    if (this.node.x >=(0 + this.blockSize * 2)) return true;
 
             }
         }
@@ -35,11 +35,11 @@ export default class BlockSI extends Block {
 
     calcEnd() {
         if (this.state == 0) {
-            this.endX = this.node.x + this.blockSize * 2;
-            this.endY = this.node.y - this.blockSize;
+            this.endX = this.node.x  + this.blockSize * 2;
+            this.endY = this.node.y;
         } else {
-            this.endX = this.node.x + 2 * this.blockSize;
-            this.endY = this.node.y - this.blockSize;
+            this.endX = this.node.x  + this.blockSize;
+            this.endY = this.node.y;
         }
     }
     canRotate(): boolean {
@@ -76,23 +76,28 @@ export default class BlockSI extends Block {
         //Block-S
 
         if (this.state == 0) {
-            node1.setAnchorPoint(-2, -1);
-            node4.setAnchorPoint(-2, 0);
+            node1.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
+            node2.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+            node3.setPosition(this.offset, this.offset + this.blockSize);
+            node4.setPosition(this.offset, this.offset);
         } else {
-            node1.setAnchorPoint(0, 0);
-            node4.setAnchorPoint(-2, 1)
+            node1.setPosition(this.offset, this.offset + this.blockSize);
+            node2.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+            node3.setPosition(this.offset + this.blockSize, this.offset);
+            node4.setPosition(this.offset + this.blockSize * 2, this.offset);
         }
         this.state = this.state == 0 ? 1 : 0;
+
         this.calcEnd()
-        while (this.endX > (this.blockSize * 10)) {
+        while (this.endX  > (this.blockSize * 10)) {
             this.node.setPosition(this.node.x - this.blockSize, this.node.y);
             this.calcEnd();
         }
-        while (this.node.x + this.state * this.blockSize < (this.blockSize * 2)) {
+        while (this.node.x  < (this.blockSize )) {
             this.node.setPosition(this.node.x + this.blockSize, this.node.y);
             this.calcEnd();
         }
-    }
 
+    }
     // update (dt) {}
 }

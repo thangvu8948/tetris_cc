@@ -1,4 +1,5 @@
 import Setting from "./settings";
+import Ads from "./Ads";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -36,7 +37,7 @@ export default class Intro extends cc.Component {
     CancelButton: cc.Node = null;
     @property(cc.Label)
     PlayerName: cc.Label = null;
-    @property(cc.AudioClip)
+    @property({type: cc.AudioClip})
     introMusic: cc.AudioClip = null;
     @property(cc.SpriteFrame)
     SoundOnSprite: cc.SpriteFrame = null;
@@ -62,6 +63,7 @@ export default class Intro extends cc.Component {
         this.loadPlayerName();
         this.EnterNamePopUp.active = false;
         this.playButton.on('touchend', () => {
+          //  Ads.OpenVideoAds();
             cc.director.loadScene('game');
         });
         this.highScoreButton.on('touchend', () => {
@@ -81,6 +83,7 @@ export default class Intro extends cc.Component {
             this.turnSound();
         })
     }
+
     turnSound() {
         if (Setting.soundState == true) {
             Setting.soundState = false;
@@ -102,8 +105,6 @@ export default class Intro extends cc.Component {
             let sprite: cc.Sprite = this.settingButton.getComponent(cc.Sprite);
             sprite.spriteFrame = this.SoundOffSprite;
         }
-        
-        
     }
     loadPlayerName() {
         let playerName: string = cc.sys.localStorage.getItem('playerName');

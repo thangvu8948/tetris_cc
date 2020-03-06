@@ -11,7 +11,7 @@ import Block from "./block";
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class BlockLI extends Block {
@@ -22,40 +22,62 @@ export default class BlockLI extends Block {
         switch (dir) {
             //case right:
             case 0: {
-                if (this.endX <  (0+this.blockSize * 10)) return true;
+                if (this.endX < (0 + this.blockSize * 10)) return true;
                 break;
             }
             //case left:
             case 1: {
-                if (this.node.x >=  (0+this.blockSize * 2)) return true;
+                if (this.node.x >= (0 + this.blockSize * 2)) return true;
             }
         }
         return false;
     }
 
     calcEnd() {
-        if (this.state == 0 || this.state == 2) {
-            this.endX = this.node.x + this.blockSize;
-            this.endY = this.node.y;
-        } else if (this.state == 1) {
-            this.endX = this.node.x + this.blockSize * 2;
-            this.endY = this.node.y;
-        } else {
-            this.endX = this.node.x + this.blockSize * 2;
-            this.endY = this.node.y;
-        }
+        // switch (this.state) {
+        //     case 0:
+        //         this.endX = this.node.x + this.blockSize * 3;
+        //         this.endY = this.endY;
+        //         break;
+        //     case 1:
+        //         this.endX = this.node.x + this.blockSize * 1;
+        //         this.endY = this.endY;
+        //         break;
+        //     case 2:
+        //         this.endX = this.node.x + this.blockSize * 1;
+        //         this.endY = this.endY;
+        //         break;
+        //     case 3:
+        //         this.endX = this.node.x + this.blockSize * 1;
+        //         this.endY = this.endY;
+        //         break;
+
+        // }
+            if (this.state == 0 ) {
+                this.endX = this.node.x + this.blockSize * 1;
+                this.endY = this.node.y;
+            } else if (this.state == 1) {
+                this.endX = this.node.x + this.blockSize * 2;
+                this.endY = this.node.y;
+            } else if (this.state == 2) {
+                this.endX = this.node.x + this.blockSize * 1;
+                this.endY = this.node.y;
+            } else {
+                this.endX = this.node.x + this.blockSize * 2;
+                this.endY = this.node.y;
+            }
     }
     canRotate(): boolean {
         var cell = this.getCell(this.node.getChildByName("1"));
         try {
             switch (this.state) {
                 case 0: {
-                    if (this.board[cell[0] - 1][cell[1]] ) return false;
+                    if (this.board[cell[0] - 1][cell[1]]) return false;
                     if (this.board[cell[0]][cell[1] + 2]) return false;
                     break;
                 }
                 case 1: {
-                   
+
                     if (this.board[cell[0] - 2][cell[1]]) return false;
                     if (this.board[cell[0] - 2][cell[1] + 1]) return false;
                     break;
@@ -90,27 +112,31 @@ export default class BlockLI extends Block {
         let node3 = this.node.children[2];
         let node4 = this.node.children[3];
         //Block-L1
-        switch(this.state) {
+        switch (this.state) {
             //default
-            case 0: 
-                node3.setAnchorPoint(0, -1);
-                node4.setAnchorPoint(-2, 0);
+            case 0:
+                node1.setPosition(this.offset, this.offset + this.blockSize);
+                node2.setPosition(this.offset, this.offset);
+                node3.setPosition(this.offset + this.blockSize, this.offset);
+                node4.setPosition(this.offset + this.blockSize * 2, this.offset);
                 break;
             case 1:
-                node2.setAnchorPoint(0, -2);
-                node4.setAnchorPoint(-1, -2);
+                node1.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
+                node2.setPosition(this.offset, this.offset + this.blockSize * 2);
+                node3.setPosition(this.offset, this.offset + this.blockSize);
+                node4.setPosition(this.offset, this.offset);
                 break;
             case 2:
-                node1.setAnchorPoint(0, -1);
-                node2.setAnchorPoint(-1, -1);
-                node3.setAnchorPoint(-2, -1);
-                node4.setAnchorPoint(-2, 0);
+                node1.setPosition(this.offset + this.blockSize * 2, this.offset);
+                node2.setPosition(this.offset + this.blockSize * 2, this.offset + this.blockSize);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node4.setPosition(this.offset, this.offset + this.blockSize);
                 break;
-            case 3: 
-                node1.setAnchorPoint(0, 0);
-                node2.setAnchorPoint(-1, 0);
-                node3.setAnchorPoint(-1, -1);
-                node4.setAnchorPoint(-1, -2);
+            case 3:
+                node1.setPosition(this.offset, this.offset);
+                node2.setPosition(this.offset + this.blockSize, this.offset);
+                node3.setPosition(this.offset + this.blockSize, this.offset + this.blockSize);
+                node4.setPosition(this.offset + this.blockSize, this.offset + this.blockSize * 2);
                 break;
         }
         this.state = (this.state + 1) % 4;

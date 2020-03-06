@@ -11,15 +11,31 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Setting {
+export default class NewClass extends cc.Component {
 
-    static soundState: boolean = true;
-    static soundThemeId: number;
-    static soundIntroId: number;
-    static isShowAds: boolean = true;
+    @property(cc.Label)
+    label: cc.Label = null;
+
+    @property
+    text: string = 'hello';
+
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    onLoad () {
+        this.scheduleOnce(function () {
+            cc.director.preloadScene('intro',function(){
+                console.log("load scene")
+                cc.director.loadScene('intro');
+            })
+        }, 0.5)
+        // cc.director.preloadScene('intro');
+        // cc.director.loadScene('intro');
+        
+    }
+
+    // start () {
+
+    // }
 
     // update (dt) {}
 }

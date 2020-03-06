@@ -14,8 +14,6 @@ const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Block extends cc.Component {
-    @property
-    timer: number = 2;
 
     // LIFE-CYCLE CALLBACKS:
     private canMoveRight: boolean;
@@ -26,11 +24,13 @@ export default class Block extends cc.Component {
     endY: number;
     canDrop:boolean = true;
     private countTimer: number = 0;
-    board: Array<cc.Node>;
+    board: Array<Array<cc.Node>>;
     isSpeedUp: boolean = false;
     isDropNow: boolean = false;
+    isSwiped: boolean = false;
+    offset: number = this.blockSize / 2;
     onLoad () {
-        
+        cc.debug.setDisplayStats(true);
     }
     calcEnd(){};
     checkMove(dir: number) :boolean {
@@ -41,11 +41,11 @@ export default class Block extends cc.Component {
                 let rightCell = this.board[cell[0]][cell[1] + 1];
                 switch(dir) {
                     case 0: 
-                        if ((rightCell != null || rightCell != undefined) && rightCell.canDrop == false){
+                        if ((rightCell) && rightCell.canDrop == false){
                             return false;
                         } else break;
                     case 1:
-                        if ((leftCell != null || leftCell != undefined) && leftCell.canDrop == false) {
+                        if ((leftCell) && leftCell.canDrop == false) {
                             return false;
                         } else break;
                 }
@@ -72,12 +72,12 @@ export default class Block extends cc.Component {
     getCell(node: cc.Node){
         let anchorX = node.anchorX;
         let anchorY = node.anchorY;
-        let coorX:number;
-        let coorY: number;
-        coorX = (-anchorX ) * this.blockSize;
-        coorY = (-anchorY) * this.blockSize;
-        let cellX = Math.ceil((this.node.x + coorX)/16 - 1);
-        let cellY = Math.ceil(24 - (this.node.y + coorY)/16);
+        // let coorX:number;
+        // let coorY: number;
+        // coorX = (-anchorX ) * this.blockSize;
+        // coorY = (-anchorY) * this.blockSize;
+        let cellX = Math.ceil((this.node.x + node.x -this.offset)/16 - 1);
+        let cellY = Math.ceil(24 - (this.node.y + node.y - this.offset)/16);
         return [cellY,cellX];
     }
 
